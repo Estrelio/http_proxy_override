@@ -3,21 +3,21 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-MethodChannel _channel = MethodChannel('com.littlegnal.http_proxy_override');
+const MethodChannel _channel = MethodChannel(
+  'com.littlegnal.http_proxy_override',
+);
 
-Future<String?> _getProxyHost() async {
-  return await _channel.invokeMethod('getProxyHost');
-}
+Future<String?> _getProxyHost() =>
+    _channel.invokeMethod<String>('getProxyHost');
 
-Future<String?> _getProxyPort() async {
-  return await _channel.invokeMethod('getProxyPort');
-}
+Future<String?> _getProxyPort() =>
+    _channel.invokeMethod<String>('getProxyPort');
 
 class HttpProxyOverride extends HttpOverrides {
+  HttpProxyOverride._(this.host, this.port);
+
   late final String? host;
   late final String? port;
-
-  HttpProxyOverride._(this.host, this.port);
 
   static Future<HttpProxyOverride> createHttpProxy() async {
     return HttpProxyOverride._(await _getProxyHost(), await _getProxyPort());
@@ -25,11 +25,11 @@ class HttpProxyOverride extends HttpOverrides {
 
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    var client = super.createHttpClient(context);
+    final HttpClient client = super.createHttpClient(context);
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) {
-      return true;
-    };
+          return true;
+        };
     return client;
   }
 
@@ -39,18 +39,14 @@ class HttpProxyOverride extends HttpOverrides {
       return super.findProxyFromEnvironment(url, environment);
     }
 
-    if (environment == null) {
-      environment = {};
-    }
+    final Map<String, String> proxyEnvironment = environment == null
+        ? <String, String>{}
+        : Map<String, String>.of(environment);
 
-    if (port != null) {
-      environment['http_proxy'] = '$host:$port';
-      environment['https_proxy'] = '$host:$port';
-    } else {
-      environment['http_proxy'] = '$host:8888';
-      environment['https_proxy'] = '$host:8888';
-    }
+    final String proxy = '$host:${port ?? 8888}';
+    proxyEnvironment['http_proxy'] = proxy;
+    proxyEnvironment['https_proxy'] = proxy;
 
-    return super.findProxyFromEnvironment(url, environment);
+    return super.findProxyFromEnvironment(url, proxyEnvironment);
   }
 }
