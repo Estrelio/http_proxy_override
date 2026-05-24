@@ -18,7 +18,7 @@ let package = Package(
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
             ],
-            exclude: ["HttpProxyOverridePlugin.m"]
+            exclude: ["HttpProxyOverridePlugin.m", "include"]
         ),
     ]
 )

@@ -15,6 +15,7 @@ public func setMockProxySetting(host: String? = nil, port: String? = nil) {
     }
 }
 
+@objc(HttpProxyOverridePlugin)
 public class SwiftHttpProxyOverridePlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
