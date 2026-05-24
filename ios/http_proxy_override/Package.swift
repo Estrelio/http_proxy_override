@@ -18,9 +18,7 @@ let package = Package(
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
             ],
-            cSettings: [
-                .headerSearchPath("include/http_proxy_override"),
-            ]
+            exclude: ["HttpProxyOverridePlugin.m"]
         ),
     ]
 )
